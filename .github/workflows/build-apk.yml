@@ -36,6 +36,30 @@ jobs:
       - name: Extract source project
         run: unzip -q focus_feasibility_test_source.zip -d project
 
+      - name: Fix overlay self-trigger flicker
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("project/app/src/main/java/com/example/focusfeasibility/AppWatchAccessibilityService.kt")
+          s = p.read_text(encoding="utf-8")
+          old = '''        if (pkg == packageName || MainActivity.isCriticalPackage(pkg)) {
+            removeOverlay()
+            return
+        }'''
+          new = '''        // The overlay belongs to this app. Ignore its own window events;
+        // removing the overlay here caused a show/remove loop and visible flicker.
+        if (pkg == packageName) return
+
+        if (MainActivity.isCriticalPackage(pkg)) {
+            removeOverlay()
+            return
+        }'''
+          if old not in s:
+              raise SystemExit("Expected overlay event-handling block was not found; stopping without building.")
+          p.write_text(s.replace(old, new, 1), encoding="utf-8")
+          print("Patched accessibility overlay self-trigger handling.")
+          PY
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
