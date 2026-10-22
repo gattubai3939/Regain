@@ -1,4 +1,4 @@
-name: Build Focus Feasibility APK
+name: Build Regain Android APK
 
 on:
   workflow_dispatch:
@@ -33,11 +33,8 @@ jobs:
           yes | sdkmanager --licenses || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
-      - name: Extract source project
-        run: unzip -q focus_feasibility_test_source.zip -d project
-
-      - name: Fix overlay self-trigger flicker
-        run: python3 .github/scripts/fix_overlay.py project
+      - name: Generate integrated Regain app
+        run: python3 .github/scripts/create_regain_app.py
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -54,6 +51,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: focus-feasibility-debug-apk
+          name: regain-debug-apk
           path: project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
