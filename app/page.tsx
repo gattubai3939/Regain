@@ -156,7 +156,7 @@ export default function Home() {
         <nav className="main-nav" aria-label="Main navigation">
           <span className="nav-section-label">YOUR SPACE</span>
           {navItems.map(({ label, icon: Icon }) => (
-            <button key={label} className={`nav-item ${tab === label ? "nav-active" : ""}"} onClick={() => { setTab(label); setShowMobileNav(false); }}>
+            <button key={label} className={`nav-item ${tab === label ? "nav-active" : ""}`} onClick={() => { setTab(label); setShowMobileNav(false); }}>
               <Icon size={18} strokeWidth={1.8} />
               <span>{label}</span>
               {label === "Blocks" && <span className="nav-count">{selectedApps.length}</span>}
